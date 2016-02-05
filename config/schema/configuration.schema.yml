@@ -1,0 +1,18 @@
+hierarchical_config.bundle.*:
+  type: config_entity
+  label: 'Configuration type config'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    type:
+      type: string
+      label: 'Type plugin ID'
+    type_configuration:
+      type: hierarchical_config.bundle.type.[%parent.type]
+    field_map:
+      type: mapping
+      label: 'Field map'

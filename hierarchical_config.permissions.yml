@@ -1,0 +1,19 @@
+add configuration entities:
+  title: 'Create new Configuration entities'
+
+administer configuration entities:
+  title: 'Administer Configuration entities'
+  description: 'Allow to access the administration form to configure Configuration entities.'
+  restrict access: true
+
+delete configuration entities:
+  title: 'Delete Configuration entities'
+
+edit configuration entities:
+  title: 'Edit Configuration entities'
+
+view published configuration entities:
+  title: 'View published Configuration entities'
+
+view unpublished configuration entities:
+  title: 'View unpublished Configuration entities'

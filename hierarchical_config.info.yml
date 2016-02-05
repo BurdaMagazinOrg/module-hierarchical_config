@@ -1,0 +1,5 @@
+name: hierarchical_config
+type: module
+description: Hierarchical configuration
+core: 8.x
+package: Helper

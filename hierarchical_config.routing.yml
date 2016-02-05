@@ -1,0 +1,14 @@
+entity.configuration_bundle.collection:
+  path: '/admin/structure/hierarchical_config'
+  defaults:
+    _entity_list: 'configuration_bundle'
+    _title: 'Configuration bundles'
+  requirements:
+    _permission: 'administer hierarchical_config'
+
+entity.configuration_bundle.edit_form:
+  path: '/admin/structure/hierarchical_config/manage/{configuration_bundle}'
+  defaults:
+    _entity_form: 'configuration_bundle.edit'
+  requirements:
+    _permission: 'administer hierarchical_config'

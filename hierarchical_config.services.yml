@@ -1,0 +1,8 @@
+services:
+  plugin.manager.hierarchical_config.type:
+    class: Drupal\hierarchical_config\ConfigurationTypeManager
+    parent: default_plugin_manager
+  hierarchical_config.register:
+    class: Drupal\hierarchical_config\RegisterService
+    arguments: []
+

@@ -1,0 +1,8 @@
+entity.configuration_bundle.edit_form:
+  title: 'Edit'
+  route_name: entity.configuration_bundle.edit_form
+  base_route: entity.configuration_bundle.edit_form
+entity.configuration_bundle.collection:
+  title: List
+  route_name: entity.configuration_bundle.collection
+  base_route: entity.configuration_bundle.collection

@@ -1,0 +1,5 @@
+entity.configuration_bundle.collection:
+  title: 'Configuration bundles'
+  parent: system.admin_structure
+  description: 'Manage configuration bundles'
+  route_name: entity.configuration_bundle.collection
