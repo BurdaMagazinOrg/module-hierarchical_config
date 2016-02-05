@@ -45,7 +45,6 @@ class Generic extends ConfigurationTypeBase {
       '#type' => 'textfield',
       '#default_value' => empty($this->configuration['foo']) ? NULL : $this->configuration['foo'],
       '#description' => t('The human-readable name of this configuration bundle.'),
-      '#required' => TRUE,
       '#size' => 30,
     );
 
@@ -54,7 +53,6 @@ class Generic extends ConfigurationTypeBase {
       '#type' => 'textfield',
       '#default_value' => empty($this->configuration['bar']) ? NULL : $this->configuration['bar'],
       '#description' => t('The human-readable name of this configuration bundle.'),
-      '#required' => TRUE,
       '#size' => 30,
     );
 

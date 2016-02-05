@@ -108,7 +108,8 @@ class ConfigurationBundleForm extends EntityForm {
     );
 
     foreach ($plugins as $plugin => $definition) {
-      $plugin_configuration = $bundle->getType()->getPluginId() == $plugin ? $bundle->type_configuration : array();
+      $plugin_configuration = $bundle->getType()
+        ->getPluginId() == $plugin ? $bundle->type_configuration : array();
       $form['type_configuration'][$plugin] = array(
         '#type' => 'container',
         '#states' => array(
@@ -119,7 +120,23 @@ class ConfigurationBundleForm extends EntityForm {
       );
       /** @var \Drupal\media_entity\MediaTypeBase $instance */
       $instance = $this->configurationTypeManager->createInstance($plugin, $plugin_configuration);
-      $form['type_configuration'][$plugin] += $instance->buildConfigurationForm([], $form_state);
+
+      $typeForm = $instance->buildConfigurationForm([], $form_state);
+      $typeConfig = $instance->getConfiguration();
+
+      $typeFormOverride = [];
+      foreach ($typeForm as $key => $element) {
+
+        $typeFormOverride[$key] = $element;
+        $typeFormOverride["${key}_override"] = [
+          '#type' => 'checkbox',
+          '#title' => $element['#title'] . t(' is overrideable'),
+          '#default_value' => (isset($typeConfig["${key}_override"]) ? $typeConfig["${key}_override"] : 0),
+        ];
+
+      }
+
+      $form['type_configuration'][$plugin] += $typeFormOverride;
       // Store the instance for validate and submit handlers.
       $this->configurableInstances[$plugin] = $instance;
     }
@@ -167,16 +184,40 @@ class ConfigurationBundleForm extends EntityForm {
 
     // Use type configuration for the plugin that was chosen.
     $configuration = $form_state->getValue('type_configuration');
-    $configuration = empty($configuration[$entity->getType()->getPluginId()]) ? [] : $configuration[$entity->getType()->getPluginId()];
+    $configuration = empty($configuration[$entity->getType()
+      ->getPluginId()]) ? [] : $configuration[$entity->getType()
+      ->getPluginId()];
 
     // Copy default values to field default values
     foreach ($configuration as $fieldName => $fieldValue) {
 
       /** @var FieldConfig $field */
-      $field = \Drupal::entityTypeManager()->getStorage('field_config')->load('configuration' . '.' . $entity->id() . '.' . $fieldName);
+      $field = \Drupal::entityTypeManager()
+        ->getStorage('field_config')
+        ->load('configuration' . '.' . $entity->id() . '.' . $fieldName);
 
-      $field->setDefaultValue($fieldValue);
-      $field->save();
+      if ($field) {
+
+        $field->setDefaultValue($fieldValue);
+        $field->save();
+      }
+      else {
+
+        $fieldName = substr($fieldName, 0, strpos($fieldName, '_override'));
+
+        if ($fieldValue) {
+          entity_get_form_display('configuration', $entity->id(), 'default')
+            ->setComponent($fieldName, array(
+              'type' => 'string_textfield',
+            ))
+            ->save();
+        }
+        else {
+          entity_get_form_display('configuration', $entity->id(), 'default')
+            ->removeComponent($fieldName)
+            ->save();
+        }
+      }
     }
 
     $entity->set('type_configuration', $configuration);
