@@ -6,6 +6,7 @@
  */
 
 namespace Drupal\hierarchical_config;
+
 use Drupal\Core\Entity\Entity;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\hierarchical_config\Entity\HierarchicalConfiguration;
@@ -56,15 +57,28 @@ class HierarchicalConfigurationService {
           if (isset($overriddenSetting)) {
             return $overriddenSetting;
           }
+
+
           /**
            * Check for fallback categories if no ad_integration_setting is found
            */
           if (!isset($termOverride) && $fieldType === 'entity_reference' && $fieldDefinition->getSetting('target_type') === 'taxonomy_term') {
             $fieldName = $fieldDefinition->getName();
-            if ($tid = $entity->$fieldName->target_id) {
-              if ($term = Term::load($tid)) {
-                $termOverride = $this->getOverriddenFromTerm($name, $term);
-              }
+
+
+            if ($fieldName == 'parent' && $entity instanceof Term) {
+              $parents = \Drupal::entityTypeManager()
+                ->getStorage('taxonomy_term')
+                ->loadParents($entity->id());
+              $term = reset($parents);
+            }
+            else {
+              $tid = $entity->$fieldName->get(0)->target_id;
+              $term = Term::load($tid);
+            }
+
+            if ($term) {
+              $termOverride = $this->getOverriddenFromTerm($name, $term);
             }
           }
         }
@@ -89,10 +103,12 @@ class HierarchicalConfigurationService {
     if ($fieldDefinition->getType() === 'entity_reference' && $fieldDefinition->getSetting('target_type') == 'hierarchical_configuration') {
       $fieldName = $fieldDefinition->getName();
 
-      $config = HierarchicalConfiguration::load($entity->$fieldName->target_id);
+      foreach ($entity->$fieldName as $field) {
+        $config = HierarchicalConfiguration::load($field->target_id);
 
-      if (!empty($config->$name)) {
-        return $config->$name->get(0)->value;
+        if (!empty($config->$name)) {
+          return $config->$name->get(0)->value;
+        }
       }
     }
   }
