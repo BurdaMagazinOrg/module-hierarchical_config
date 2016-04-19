@@ -106,7 +106,7 @@ class HierarchicalConfigurationService {
       foreach ($entity->$fieldName as $field) {
         $config = HierarchicalConfiguration::load($field->target_id);
 
-        if (!empty($config->$name)) {
+        if (!empty($config->$name) && $config->$name->get(0)) {
           return $config->$name->get(0)->value;
         }
       }
